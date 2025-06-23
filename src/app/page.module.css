@@ -22,3 +22,21 @@
   height: 30px;
   border: 1px solid;
 }
+
+.wall {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  background-color: black;
+}
+
+.button {
+  padding: 10px 20px;
+  margin-top: 5px;
+  font-size: 1.2em;
+  color: white;
+  cursor: pointer;
+  background-color: black;
+  border: black;
+  border-radius: 5px;
+}
