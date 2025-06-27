@@ -17,7 +17,10 @@
 }
 
 .cell {
+  box-sizing: border-box;
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 30px;
   height: 30px;
   border: 1px solid;
@@ -39,4 +42,14 @@
   background-color: black;
   border: black;
   border-radius: 5px;
+}
+
+.character {
+  display: flex;
+  align-items: center;
+  width: 30px;
+  height: 28px;
+  background: url('/images/oyasumi.png');
+  background-repeat: no-repeat;
+  background-size: contain;
 }

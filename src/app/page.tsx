@@ -20,12 +20,14 @@ const startBoard = [
 
 export default function Home() {
   const [board, setBoard] = useState(() => structuredClone(startBoard));
+  const [characterPlace, setCharacterPlace] = useState({ x: 0, y: 0 });
   const newBoard = structuredClone(board);
 
   const clickButton = (newBoard: number[][]) => {
     for (let wallY = 0; wallY < 9; wallY++)
       for (let wallX = 0; wallX < 9; wallX++)
         if (newBoard[wallY][wallX] === 1 && wallY % 2 === 1 && wallX % 2 === 1) {
+          //壁の座標が奇数のときー＞都合がいい
           const randomWall = Math.floor(Math.random() * 4) + 1;
           console.log(Math.floor(Math.random() * 4) + 1);
           //Math.random() * ( 最大値 - 最小値 ) + 最小値;
@@ -46,6 +48,11 @@ export default function Home() {
 
   const resetBoard = () => {
     setBoard(startBoard);
+    setCharacterPlace({ x: 0, y: 0 });
+  };
+
+  const moveCharacter = () => {
+    //１：上 ２：右 ３：下 ４：左とする
   };
 
   return (
@@ -55,12 +62,18 @@ export default function Home() {
           row.map((wall, x) => (
             <div className={styles.cell} key={`${x}-${y}`}>
               {wall === 1 && <div className={styles.wall} />}
+              {characterPlace.x === x && characterPlace.y === y && (
+                <div className={styles.character} />
+              )}
             </div>
           )),
         )}
       </div>
+      <button className={styles.button} onClick={moveCharacter}>
+        一歩進む
+      </button>
       <button className={styles.button} onClick={() => clickButton(newBoard)}>
-        ポチ
+        生成
       </button>
       <button className={styles.button} onClick={resetBoard}>
         リセット
