@@ -22,6 +22,12 @@ export default function Home() {
   const [board, setBoard] = useState(() => structuredClone(startBoard));
   const [charaDir, setCharaDir] = useState(2);
   const newBoard = structuredClone(board);
+  const characterOrientation: { [key: number]: number } = {
+    1: -90,
+    2: 0,
+    3: 90,
+    4: 180,
+  };
 
   const clickButton = (newBoard: number[][]) => {
     for (let wallY = 0; wallY < 9; wallY++)
@@ -62,96 +68,98 @@ export default function Home() {
           //上向きのとき
           if (charaDir === 1) {
             if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
+              // 左
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX - 1] = 2;
-              setBoard(newBoard);
-              setCharaDir(4); // 向きを「左」へ
-              return;
+              setCharaDir(4);
             } else if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
+              // 前
               newBoard[charaY][charaX] = 0;
               newBoard[charaY - 1][charaX] = 2;
-              setBoard(newBoard);
-              return;
-            } else {
-              if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
-                setCharaDir(2); // 右を向く
-              } else {
-                setCharaDir(3); // 行き止まりなので後ろ(下)を向く
-              }
-              return;
+            } else if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
+              // 右
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY][charaX + 1] = 2;
+              setCharaDir(2);
+            } else if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
+              // 後
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY + 1][charaX] = 2;
+              setCharaDir(3);
             }
           }
-
-          //右向きのとき
+          // 右向きのとき
           else if (charaDir === 2) {
             if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
+              // 左(上)
               newBoard[charaY][charaX] = 0;
               newBoard[charaY - 1][charaX] = 2;
-              setBoard(newBoard);
-              setCharaDir(1); // 向きを「上」へ
-              return;
+              setCharaDir(1);
             } else if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
+              // 前(右)
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX + 1] = 2;
-              setBoard(newBoard);
-              return;
-            } else {
-              if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
-                setCharaDir(3); // 右手側(下)を向く
-              } else {
-                setCharaDir(4); // 行き止まりなので後ろ(左)を向く
-              }
-              return;
-            }
-          }
-
-          //下向きのとき
-          else if (charaDir === 3) {
-            if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
-              newBoard[charaY][charaX] = 0;
-              newBoard[charaY][charaX + 1] = 2;
-              setBoard(newBoard);
-              setCharaDir(2); // 向きを「右」へ
-              return;
             } else if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
+              // 右(下)
               newBoard[charaY][charaX] = 0;
               newBoard[charaY + 1][charaX] = 2;
-              setBoard(newBoard);
-              return;
-            } else {
-              if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
-                setCharaDir(4); // 右手側(左)を向く
-              } else {
-                setCharaDir(1); // 行き止まりなので後ろ(上)を向く
-              }
-              return;
-            }
-          }
-
-          //左向きのとき
-          else if (charaDir === 4) {
-            if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
-              newBoard[charaY][charaX] = 0;
-              newBoard[charaY + 1][charaX] = 2;
-              setBoard(newBoard);
-              setCharaDir(3); // 向きを「下」へ
-              return;
+              setCharaDir(3);
             } else if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
+              // 後(左)
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX - 1] = 2;
-              setBoard(newBoard);
-              return;
-            } else {
-              if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
-                setCharaDir(1); // 右手側(上)を向く
-              } else {
-                setCharaDir(2); // 行き止まりなので後ろ(右)を向く
-              }
-              return;
+              setCharaDir(4);
             }
           }
+          // 下向きのとき
+          else if (charaDir === 3) {
+            if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
+              // 左(右)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY][charaX + 1] = 2;
+              setCharaDir(2);
+            } else if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
+              // 前(下)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY + 1][charaX] = 2;
+            } else if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
+              // 右(左)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY][charaX - 1] = 2;
+              setCharaDir(4);
+            } else if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
+              // 後(上)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY - 1][charaX] = 2;
+              setCharaDir(1);
+            }
+          }
+          // 左向きのとき
+          else if (charaDir === 4) {
+            if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
+              // 左(下)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY + 1][charaX] = 2;
+              setCharaDir(3);
+            } else if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
+              // 前(左)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY][charaX - 1] = 2;
+            } else if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
+              // 右(上)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY - 1][charaX] = 2;
+              setCharaDir(1);
+            } else if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
+              // 後(右)
+              newBoard[charaY][charaX] = 0;
+              newBoard[charaY][charaX + 1] = 2;
+              setCharaDir(2);
+            }
+          }
+          setBoard(newBoard);
+          return;
         }
-    setBoard(newBoard);
   };
 
   return (
@@ -161,7 +169,12 @@ export default function Home() {
           row.map((col, x) => (
             <div className={styles.cell} key={`${x}-${y}`}>
               {col === 1 && <div className={styles.wall} />}
-              {col === 2 && <div className={styles.character} />}
+              {col === 2 && (
+                <div
+                  className={styles.character}
+                  style={{ transform: `rotate(${characterOrientation[charaDir]}deg)` }}
+                />
+              )}
             </div>
           )),
         )}

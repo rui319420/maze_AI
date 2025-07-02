@@ -51,4 +51,5 @@
   background: url('/images/oyasumi.png');
   background-repeat: no-repeat;
   background-size: contain;
+  transition: transform 0.2s ease-in-out;
 }
