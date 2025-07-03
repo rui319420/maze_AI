@@ -6,6 +6,7 @@ import styles from './page.module.css';
 // やるべきこと
 // ランダムに迷路を生成;
 // 左手の法則に従って進むキャラクター作成;
+
 const startBoard = [
   [2, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 1, 0, 1, 0, 1, 0, 1, 0],
@@ -15,12 +16,14 @@ const startBoard = [
   [0, 1, 0, 1, 0, 1, 0, 1, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 1, 0, 1, 0, 1, 0, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 3],
 ];
+//0←道 1←壁 2←キャラ 3←ゴール
 
 export default function Home() {
   const [board, setBoard] = useState(() => structuredClone(startBoard));
   const [charaDir, setCharaDir] = useState(2);
+  const [clear, setClear] = useState(false);
   const newBoard = structuredClone(board);
   const characterOrientation: { [key: number]: number } = {
     1: -90,
@@ -55,9 +58,11 @@ export default function Home() {
   const resetBoard = () => {
     setBoard(startBoard);
     setCharaDir(2);
+    setClear(false);
   };
 
   const moveCharacter = () => {
+    if (clear) return; // ✨ クリア済みの場合は何もしない
     const newBoard = structuredClone(board);
     // let charaDir: number = 1;
     //１：上 ２：右 ３：下 ４：左とする
@@ -67,22 +72,35 @@ export default function Home() {
         if (newBoard[charaY][charaX] === 2) {
           //上向きのとき
           if (charaDir === 1) {
-            if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
-              // 左
+            // ✨ 移動先のマスが「道(0)」または「ゴール(3)」かチェック
+            if (
+              charaX > 0 &&
+              (newBoard[charaY][charaX - 1] === 0 || newBoard[charaY][charaX - 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX - 1] === 3) setClear(true); // ✨ ゴールならクリア状態にする
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX - 1] = 2;
               setCharaDir(4);
-            } else if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
-              // 前
+            } else if (
+              charaY > 0 &&
+              (newBoard[charaY - 1][charaX] === 0 || newBoard[charaY - 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY - 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY - 1][charaX] = 2;
-            } else if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
-              // 右
+            } else if (
+              charaX < 8 &&
+              (newBoard[charaY][charaX + 1] === 0 || newBoard[charaY][charaX + 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX + 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX + 1] = 2;
               setCharaDir(2);
-            } else if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
-              // 後
+            } else if (
+              charaY < 8 &&
+              (newBoard[charaY + 1][charaX] === 0 || newBoard[charaY + 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY + 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY + 1][charaX] = 2;
               setCharaDir(3);
@@ -90,22 +108,34 @@ export default function Home() {
           }
           // 右向きのとき
           else if (charaDir === 2) {
-            if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
-              // 左(上)
+            if (
+              charaY > 0 &&
+              (newBoard[charaY - 1][charaX] === 0 || newBoard[charaY - 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY - 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY - 1][charaX] = 2;
               setCharaDir(1);
-            } else if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
-              // 前(右)
+            } else if (
+              charaX < 8 &&
+              (newBoard[charaY][charaX + 1] === 0 || newBoard[charaY][charaX + 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX + 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX + 1] = 2;
-            } else if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
-              // 右(下)
+            } else if (
+              charaY < 8 &&
+              (newBoard[charaY + 1][charaX] === 0 || newBoard[charaY + 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY + 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY + 1][charaX] = 2;
               setCharaDir(3);
-            } else if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
-              // 後(左)
+            } else if (
+              charaX > 0 &&
+              (newBoard[charaY][charaX - 1] === 0 || newBoard[charaY][charaX - 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX - 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX - 1] = 2;
               setCharaDir(4);
@@ -113,22 +143,34 @@ export default function Home() {
           }
           // 下向きのとき
           else if (charaDir === 3) {
-            if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
-              // 左(右)
+            if (
+              charaX < 8 &&
+              (newBoard[charaY][charaX + 1] === 0 || newBoard[charaY][charaX + 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX + 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX + 1] = 2;
               setCharaDir(2);
-            } else if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
-              // 前(下)
+            } else if (
+              charaY < 8 &&
+              (newBoard[charaY + 1][charaX] === 0 || newBoard[charaY + 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY + 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY + 1][charaX] = 2;
-            } else if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
-              // 右(左)
+            } else if (
+              charaX > 0 &&
+              (newBoard[charaY][charaX - 1] === 0 || newBoard[charaY][charaX - 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX - 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX - 1] = 2;
               setCharaDir(4);
-            } else if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
-              // 後(上)
+            } else if (
+              charaY > 0 &&
+              (newBoard[charaY - 1][charaX] === 0 || newBoard[charaY - 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY - 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY - 1][charaX] = 2;
               setCharaDir(1);
@@ -136,22 +178,34 @@ export default function Home() {
           }
           // 左向きのとき
           else if (charaDir === 4) {
-            if (charaY < 8 && newBoard[charaY + 1][charaX] === 0) {
-              // 左(下)
+            if (
+              charaY < 8 &&
+              (newBoard[charaY + 1][charaX] === 0 || newBoard[charaY + 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY + 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY + 1][charaX] = 2;
               setCharaDir(3);
-            } else if (charaX > 0 && newBoard[charaY][charaX - 1] === 0) {
-              // 前(左)
+            } else if (
+              charaX > 0 &&
+              (newBoard[charaY][charaX - 1] === 0 || newBoard[charaY][charaX - 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX - 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX - 1] = 2;
-            } else if (charaY > 0 && newBoard[charaY - 1][charaX] === 0) {
-              // 右(上)
+            } else if (
+              charaY > 0 &&
+              (newBoard[charaY - 1][charaX] === 0 || newBoard[charaY - 1][charaX] === 3)
+            ) {
+              if (newBoard[charaY - 1][charaX] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY - 1][charaX] = 2;
               setCharaDir(1);
-            } else if (charaX < 8 && newBoard[charaY][charaX + 1] === 0) {
-              // 後(右)
+            } else if (
+              charaX < 8 &&
+              (newBoard[charaY][charaX + 1] === 0 || newBoard[charaY][charaX + 1] === 3)
+            ) {
+              if (newBoard[charaY][charaX + 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX + 1] = 2;
               setCharaDir(2);
@@ -164,6 +218,7 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
+      {clear && <div className={styles.clearMessage}>おめでとう！</div>}
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((col, x) => (
@@ -175,6 +230,7 @@ export default function Home() {
                   style={{ transform: `rotate(${characterOrientation[charaDir]}deg)` }}
                 />
               )}
+              {col === 3 && <div className={styles.goal} />}
             </div>
           )),
         )}
