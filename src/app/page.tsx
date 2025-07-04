@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 // やるべきこと
@@ -25,6 +25,7 @@ export default function Home() {
   const [charaDir, setCharaDir] = useState(2);
   const [clear, setClear] = useState(false);
   const newBoard = structuredClone(board);
+  const [isAutoMove, setIsAutoMove] = useState(false);
   const characterOrientation: { [key: number]: number } = {
     1: -90,
     2: 0,
@@ -59,10 +60,11 @@ export default function Home() {
     setBoard(startBoard);
     setCharaDir(2);
     setClear(false);
+    setIsAutoMove(false);
   };
 
-  const moveCharacter = () => {
-    if (clear) return; // ✨ クリア済みの場合は何もしない
+  const moveCharacter = useCallback(() => {
+    if (clear) return; //クリア済みの場合は何もしない
     const newBoard = structuredClone(board);
     // let charaDir: number = 1;
     //１：上 ２：右 ３：下 ４：左とする
@@ -72,12 +74,11 @@ export default function Home() {
         if (newBoard[charaY][charaX] === 2) {
           //上向きのとき
           if (charaDir === 1) {
-            // ✨ 移動先のマスが「道(0)」または「ゴール(3)」かチェック
             if (
               charaX > 0 &&
               (newBoard[charaY][charaX - 1] === 0 || newBoard[charaY][charaX - 1] === 3)
             ) {
-              if (newBoard[charaY][charaX - 1] === 3) setClear(true); // ✨ ゴールならクリア状態にする
+              if (newBoard[charaY][charaX - 1] === 3) setClear(true);
               newBoard[charaY][charaX] = 0;
               newBoard[charaY][charaX - 1] = 2;
               setCharaDir(4);
@@ -214,7 +215,22 @@ export default function Home() {
           setBoard(newBoard);
           return;
         }
-  };
+  }, [board, charaDir, clear]);
+
+  useEffect(() => {
+    if (!isAutoMove || clear) {
+      return;
+    }
+
+    // 500ミリ秒ごとにmoveCharacterを実行
+    const intervalId = setInterval(() => {
+      moveCharacter();
+    }, 150);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isAutoMove, clear, moveCharacter]);
 
   return (
     <div className={styles.container}>
@@ -237,6 +253,9 @@ export default function Home() {
       </div>
       <button className={styles.button} onClick={moveCharacter}>
         一歩進む
+      </button>
+      <button className={styles.button} onClick={() => setIsAutoMove((prev) => !prev)}>
+        {isAutoMove ? '自動実行を停止' : '自動で実行'}
       </button>
       <button className={styles.button} onClick={() => clickButton(newBoard)}>
         生成
